@@ -17,7 +17,13 @@ public class Template {
         parser.parseSegments().forEach(segment -> {
             if (isVariable(segment)) {
                 String name = segment.substring(2, segment.length() - 1);
-                builder.append(variables.get(name));
+                String value = variables.get(name);
+
+                if (null == value) {
+                    throw new MissingValueException();
+                }
+
+                builder.append(value);
             } else {
                 builder.append(segment);
             }

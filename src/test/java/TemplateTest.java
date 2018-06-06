@@ -41,6 +41,28 @@ public class TemplateTest {
                 .evaluatesTo("Hi, Reader");
     }
 
+    @Test(expected = MissingValueException.class)
+    public void evaluateTemplateWithMissingVariable() {
+        evaluateTemplate("Hello, ${name}");
+    }
+
+    @Test
+    public void evaluateTemplateWithUnusedVariable() {
+        template("Hello, ${name}")
+                .withVariable("doesnotexist", "Hi")
+                .withVariable("name", "Reader")
+                .evaluatesTo("Hello, Reader");
+    }
+
+    @Test
+    public void evaluateTemplateWithMarkup() {
+        template("${one}, ${two}, ${three}")
+                .withVariable("one", "1")
+                .withVariable("two", "${foo}")
+                .withVariable("three", "3")
+                .evaluatesTo("1, ${foo}, 3");
+    }
+
     private TemplateTest template(String templateText) {
         template = new Template(templateText);
         return this;
@@ -53,5 +75,10 @@ public class TemplateTest {
 
     private void evaluatesTo(String expectedOutput) {
         assertEquals(expectedOutput, template.evaluate());
+    }
+
+    private void evaluateTemplate(String templateText) {
+        template = new Template(templateText);
+        template.evaluate();
     }
 }
